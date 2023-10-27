@@ -1,0 +1,14 @@
+BUILD_NUMBER="${BUILD_NUMBER}"
+IMAGE_NAME="imrezaulkrm/nodejs:$BUILD_NUMBER"
+docker build -t $IMAGE_NAME .
+docker run -d -p 3010:3000 $IMAGE_NAME
+TODAYS_DATE=$(date "+%Y%m%d")
+IMAGE_NAME1="imrezaulkrm/nodejs:$TODAYS_DATE"
+docker build -t $IMAGE_NAME1 .
+docker run -d -p 3020:3000 $IMAGE_NAME1
+docker build -t imrezaulkrm/nodejs:latest .
+docker run -d -p 3030:3000 nodejs:latest
+docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+docker push $IMAGE_NAME
+docker push $IMAGE_NAME1
+docker push imrezaulkrm/nodejs:latest

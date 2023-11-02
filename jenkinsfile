@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        image1="$BUILD_NUMBER" 
+        image1 = "${BUILD_NUMBER}"
         //jenkins build
-        image2=$(date "+%Y%m%d")
+        image2 = new Date().format("yyyyMMdd")
         //jenkins build date
         image3 = "Latest"
         //just latest

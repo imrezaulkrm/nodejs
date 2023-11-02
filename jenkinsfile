@@ -41,12 +41,9 @@ pipeline {
                     script {
                         def dockerUser = env.user
                         def dockerPass = env.pass
-                        
-                        sh 'docker-credential-secretservice get'
-                        sh 'docker-credential-secretservice store'
 
                         // Log in to Docker registry using --password-stdin
-                        sh "echo \$dockerPass | docker login -u \$dockerUser --password-stdin"
+                        sh "echo ${pass} | docker login -u${user} --password-stdin"
 
                         // Push Docker images
                         sh "docker push imrezaulkrm/nodejs:${image1}"

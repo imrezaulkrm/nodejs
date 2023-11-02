@@ -37,12 +37,16 @@ pipeline {
 
         stage('login+push+logout') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'Dockerhub', passwordVariable: 'docker'usernameVariable: 'docker')]) {
-                sh "echo ${PASSWORD} | docker login --username ${USER_NAME} --password-stdin"
-                sh "docker push imrezaulkrm/nodejs:${image1}"
-                sh "docker push imrezaulkrm/nodejs:${image2}"
-                sh "docker push imrezaulkrm/nodejs:${image3}"
-                sh "docker logout"
+                withCredentials([usernamePassword(credentialsId: 'Dockerhub', passwordVariable: 'docker', usernameVariable: 'docker')]) {
+                    script {
+                        def registry = "https://hub.docker.com/r/imrezaulkrm/nodejs" // Replace with your Docker registry URL
+                        
+                        sh "echo \$docker_password | docker login --username \$docker_username --password-stdin \$registry"
+                        sh "docker push imrezaulkrm/nodejs:${image1}"
+                        sh "docker push imrezaulkrm/nodejs:${image2}"
+                        sh "docker push imrezaulkrm/nodejs:${image3}"
+                        sh "docker logout \$registry"
+                    }
                 }
             }
         }

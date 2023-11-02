@@ -37,19 +37,18 @@ pipeline {
 
         stage('login+push+logout') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'Dockerhub', passwordVariable: 'docker', usernameVariable: 'docker')]) {
-                    script {
-                        def registry = "https://hub.docker.com/r/imrezaulkrm/nodejs" // Replace with your Docker registry URL
-                        
-                        sh "echo \$docker_password | docker login --username \$docker_username --password-stdin \$registry"
-                        sh 'docker push imrezaulkrm/nodejs:${image1}'
-                        sh 'docker push imrezaulkrm/nodejs:${image2}'
-                        sh 'docker push imrezaulkrm/nodejs:${image3}'
-                        sh 'docker logout \$registry'
-                    }
+                    withCredentials([usernamePassword(credentialsId: 'Dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                    sh 'echo ${pass} | docker login --username ${user} --password-stdin'
+                    
+                    sh 'docker push imrezaulkrm/nodejs:${image1}'
+                    sh 'docker push imrezaulkrm/nodejs:${image2}'
+                    sh 'docker push imrezaulkrm/nodejs:${image3}'
+
+                    sh 'docker logout'
                 }
             }
         }
+        
 
         
         stage('email notification') {
@@ -63,19 +62,19 @@ pipeline {
         always {
             script {
                 // Stop and remove Docker containers
-                sh 'docker stop imrezaulkrm/nodejs:${image1} || true'  // Use "|| true" to prevent failures if the container doesn't exist
-                sh 'docker rm imrezaulkrm/nodejs:${image1} || true'
+                sh 'docker stop imrezaulkrm/nodejs:${image1}'  // Use "|| true" to prevent failures if the container doesn't exist
+                sh 'docker rm imrezaulkrm/nodejs:${image1}'
 
-                sh 'docker stop imrezaulkrm/nodejs:${image2} || true'
-                sh 'docker rm imrezaulkrm/nodejs:${image2} || true'
+                sh 'docker stop imrezaulkrm/nodejs:${image2}'
+                sh 'docker rm imrezaulkrm/nodejs:${image2}'
 
-                sh 'docker stop imrezaulkrm/nodejs:${image3} || true'
-                sh 'docker rm imrezaulkrm/nodejs:${image3} || true'
+                sh 'docker stop imrezaulkrm/nodejs:${image3}'
+                sh 'docker rm imrezaulkrm/nodejs:${image3}'
 
                 // Remove Docker images
-                sh 'docker rmi imrezaulkrm/nodejs:${image1} || true'
-                sh 'docker rmi imrezaulkrm/nodejs:${image2} || true'
-                sh 'docker rmi imrezaulkrm/nodejs:${image3} || true'
+                sh 'docker rmi imrezaulkrm/nodejs:${image1}'
+                sh 'docker rmi imrezaulkrm/nodejs:${image2}'
+                sh 'docker rmi imrezaulkrm/nodejs:${image3}'
             }
         }
     }

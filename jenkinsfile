@@ -1,0 +1,78 @@
+pipeline {
+    agent any
+    environment {
+        image1="$BUILD_NUMBER" 
+        //jenkins build
+        image2=$(date "+%Y%m%d")
+        //jenkins build date
+        image3 = "Latest"
+        //just latest
+     }
+
+    stages {
+        stage('source code pull from github') {
+            steps {
+                git branch: 'main', url: 'https://github.com/imrezaulkrm/nodejs.git'
+            }
+        }
+
+        stage('build number tag') {
+            steps {
+                sh '''docker build -t imrezaulkrm/nodejs:${image1} .
+                    docker run -d -p 3010:3000 imrezaulkrm/nodejs:${image1}'''
+            }
+        }
+
+        stage('todays date tag') {
+            steps {
+                sh '''docker build -t imrezaulkrm/nodejs:${image2} .
+                    docker run -d -p 3020:3000 imrezaulkrm/nodejs:${image2}'''
+            }
+        }
+
+        stage('just latest tag') {
+            steps {
+                sh '''docker build -t imrezaulkrm/nodejs:${image3} .
+                    docker run -d -p 3030:3000 imrezaulkrm/nodejs:${image3}'''
+            }
+        }
+
+        stage('login+push+logout') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Dockerhub', passwordVariable: 'docker', usernameVariable: 'docker')]) {
+            // some block
+                sh'echo ${PASSWORD} | docker login --username ${USER_NAME} --password-stdin'
+                sh'docker push imrezaulkrm/nodejs:${image1}'
+                sh'docker push imrezaulkrm/nodejs:${image2}'
+                sh'docker push imrezaulkrm/nodejs:${image3}'
+                sh'docker logout'
+                    }
+                }
+            }
+        stage('email notification') {
+            steps {
+                emailext body: 'challege complete', subject: 'jenkins', to: 'sayem010ahmed@gmail.com'
+            }
+        }
+            
+        
+        post {
+            always {
+                script {
+                    // stop Docker container
+                    sh 'docker stop imrezaulkrm/nodejs:${image1}'
+                    sh 'docker stop imrezaulkrm/nodejs:${image2}'
+                    sh 'docker stop imrezaulkrm/nodejs:${image3}'
+                    // Remove Docker container
+                    sh 'docker rm imrezaulkrm/nodejs:${image1}'
+                    sh 'docker rm imrezaulkrm/nodejs:${image2}'
+                    sh 'docker rm imrezaulkrm/nodejs:${image3}'
+                    // Remove Docker images
+                    sh 'docker rmi imrezaulkrm/nodejs:${image1}'
+                    sh 'docker rmi imrezaulkrm/nodejs:${image2}'
+                    sh 'docker rmi imrezaulkrm/nodejs:${image3}'
+                }
+            }
+        }
+    }
+}

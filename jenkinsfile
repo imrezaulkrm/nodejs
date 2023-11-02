@@ -37,17 +37,26 @@ pipeline {
 
         stage('login+push+logout') {
             steps {
-                    withCredentials([usernamePassword(credentialsId: 'Dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                    sh'echo ${pass} | docker login --username ${user} --password-stdin'
-                    
-                    sh 'docker push imrezaulkrm/nodejs:${image1}'
-                    sh 'docker push imrezaulkrm/nodejs:${image2}'
-                    sh 'docker push imrezaulkrm/nodejs:${image3}'
+                withCredentials([usernamePassword(credentialsId: 'Dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                    script {
+                        def dockerUser = env.user
+                        def dockerPass = env.pass
+                        
+                        // Log in to Docker registry using --password-stdin
+                        sh "echo \$dockerPass | docker login -u \$dockerUser --password-stdin"
 
-                    sh 'docker logout'
+                        // Push Docker images
+                        sh "docker push imrezaulkrm/nodejs:${image1}"
+                        sh "docker push imrezaulkrm/nodejs:${image2}"
+                        sh "docker push imrezaulkrm/nodejs:${image3}"
+
+                        // Log out from Docker registry
+                        sh "docker logout"
+                    }
                 }
             }
         }
+
         
 
         

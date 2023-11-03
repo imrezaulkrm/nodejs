@@ -80,12 +80,11 @@ pipeline {
                 sh 'docker stop imrezaulkrm/nodejs:${image3} || true'
                 sh 'docker rm imrezaulkrm/nodejs:${image3} || true'
 
-                // Remove Docker images
-                sh 'docker rmi imrezaulkrm/nodejs:${image1} || true'
-                sh 'docker rmi imrezaulkrm/nodejs:${image2} || true'
-                sh 'docker rmi imrezaulkrm/nodejs:${image3} || true'
+                // Remove Docker images with force ("-f") to handle potential conflicts
+                sh 'docker rmi -f imrezaulkrm/nodejs:${image1} || true'
+                sh 'docker rmi -f imrezaulkrm/nodejs:${image2} || true'
+                sh 'docker rmi -f imrezaulkrm/nodejs:${image3} || true'
             }
         }
     }
-
 }

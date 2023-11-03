@@ -70,21 +70,22 @@ pipeline {
     post {
         always {
             script {
-                // Stop and remove Docker containers
-                sh 'docker stop imrezaulkrm/nodejs:${image1}'  // Use "|| true" to prevent failures if the container doesn't exist
-                sh 'docker rm imrezaulkrm/nodejs:${image1}'
+                // Stop and remove Docker containers with "|| true" to prevent failures if the containers don't exist
+                sh 'docker stop imrezaulkrm/nodejs:${image1} || true'
+                sh 'docker rm imrezaulkrm/nodejs:${image1} || true'
 
-                sh 'docker stop imrezaulkrm/nodejs:${image2}'
-                sh 'docker rm imrezaulkrm/nodejs:${image2}'
+                sh 'docker stop imrezaulkrm/nodejs:${image2} || true'
+                sh 'docker rm imrezaulkrm/nodejs:${image2} || true'
 
-                sh 'docker stop imrezaulkrm/nodejs:${image3}'
-                sh 'docker rm imrezaulkrm/nodejs:${image3}'
+                sh 'docker stop imrezaulkrm/nodejs:${image3} || true'
+                sh 'docker rm imrezaulkrm/nodejs:${image3} || true'
 
                 // Remove Docker images
-                sh 'docker rmi imrezaulkrm/nodejs:${image1}'
-                sh 'docker rmi imrezaulkrm/nodejs:${image2}'
-                sh 'docker rmi imrezaulkrm/nodejs:${image3}'
+                sh 'docker rmi imrezaulkrm/nodejs:${image1} || true'
+                sh 'docker rmi imrezaulkrm/nodejs:${image2} || true'
+                sh 'docker rmi imrezaulkrm/nodejs:${image3} || true'
             }
         }
     }
+
 }
